@@ -60,7 +60,6 @@
         <div class="field"><span class="lbl">Jantina</span><div class="seg" id="rg-j"><button type="button" data-j="L" aria-pressed="${r.jantina === "L"}">Lelaki</button><button type="button" data-j="P" aria-pressed="${r.jantina === "P"}">Perempuan</button></div></div>
       </div>
       <div class="field"><label for="rg-tel">No. telefon</label><input type="tel" id="rg-tel" inputmode="numeric" autocomplete="tel" value="${esc(r.telefon)}" placeholder="Contoh: 0123456789"><span class="hint">Nombor ini digunakan untuk log masuk.</span></div>
-      <div class="field"><label for="rg-kump">Kod kumpulan</label><input type="text" id="rg-kump" autocapitalize="characters" value="${esc(r.kumpulan)}" placeholder="Contoh: HTA-2027-A"><span class="hint">Diberi oleh fisio anda. Biarkan kosong jika belum ada.</span></div>
       <p class="err" id="rg-err" role="alert" hidden></p>
       <button class="btn block" type="submit">Seterusnya</button>
       ${cfgWarn()}
@@ -158,7 +157,6 @@
     r.nama = $("#rg-nama").value.trim().replace(/\s+/g, " ");
     r.umur = $("#rg-umur").value.trim();
     r.telefon = $("#rg-tel").value.trim();
-    r.kumpulan = $("#rg-kump").value.trim().toUpperCase().replace(/\s+/g, "-");
     const tel = r.telefon.replace(/\D/g, "").replace(/^60(?=\d{9,10}$)/, "0");
     const umur = Number(r.umur);
     let msg = "", focus = null;
@@ -166,7 +164,6 @@
     else if (!(umur >= 10 && umur <= 110) || !Number.isInteger(umur)) { msg = "Sila isi umur yang betul."; focus = "#rg-umur"; }
     else if (!r.jantina) msg = "Sila pilih jantina.";
     else if (!/^0\d{8,10}$/.test(tel)) { msg = "No. telefon tidak sah. Contoh: 0123456789"; focus = "#rg-tel"; }
-    else if (r.kumpulan && !/^[A-Z0-9][A-Z0-9-]{1,29}$/.test(r.kumpulan)) { msg = "Kod kumpulan hanya huruf, nombor dan tanda '-'. Contoh: HTA-2027-A"; focus = "#rg-kump"; }
     if (msg) { showErr("#rg-err", msg); if (focus) $(focus).focus(); return; }
     r.telefon = tel;
     st.step = 2; st.msg = ""; render();

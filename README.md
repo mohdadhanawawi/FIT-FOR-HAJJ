@@ -85,8 +85,8 @@ Anda perlu: akaun Google, dan akaun Netlify percuma (boleh daftar guna akaun Goo
 
 Ulang untuk setiap fisio.
 
-### Langkah 8: Beri kod kumpulan kepada jemaah
-Tetapkan kod untuk setiap kumpulan, contoh `HTA-2027-A`. Jemaah isi kod itu semasa daftar. Di dashboard, anda boleh tapis jemaah ikut kod ini.
+### Langkah 8 (pilihan): Kod kumpulan
+Jemaah tidak perlu isi kod kumpulan semasa daftar. Jika fisio mahu asingkan jemaah ikut kumpulan, isi kolum **kumpulan** dalam tab USERS secara manual (contoh `HTA-2027-A`). Dashboard fisio akan terus boleh tapis ikut kod tersebut.
 
 ---
 
@@ -109,7 +109,7 @@ URL kekal sama, jadi `config.js` dan Netlify tak perlu diubah.
 ## Cara guna
 
 **Jemaah**
-- **Daftar:** isi nama, umur, jantina, no. telefon, kod kumpulan, kemudian cipta PIN 6 digit (dua kali).
+- **Daftar:** isi nama, umur, jantina, no. telefon, kemudian cipta PIN 6 digit (dua kali).
 - **Log masuk:** isi no. telefon, kemudian tekan PIN pada papan nombor. App akan masuk sendiri bila PIN cukup 6 digit.
 - **Lupa PIN:** hubungi fisio. Fisio boleh set PIN baharu.
 - **Ujian:** pilih ujian, pilih PRE/POST, isi skor, kemudian tekan **Simpan skor**. Rekod boleh di-Edit atau dipadam (tekan **Padam**, kemudian **Sahkan padam**).
