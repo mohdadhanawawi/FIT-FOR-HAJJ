@@ -48,8 +48,8 @@ window.FFH_DATA = (function () {
   const EXS = [
     { id: "sitreach", k: 1, name: "Sit and Reach", title: "Aktiviti Sit-and-Reach",
       rx: "Tahan 15 saat, ulang 3 kali. Lakukan 5 kali sehari.",
-      steps: ["Duduk di lantai atau di hujung kerusi, sebelah atau kedua-dua kaki lurus.", "Lentur badan ke depan sejauh yang boleh sambil belakang kekal panjang.", "Rasa regangan di belakang peha, bukan sakit.", "Tahan 15 saat sambil bernafas biasa.", "Ulang 3 kali. Buat sesi ini 5 kali sehari."],
-      fields: [{ key: "ulangan", label: "Ulangan", unit: "kali", def: 3, max: 1000 }, { key: "sesi", label: "Sesi hari ini", unit: "kali", def: 5, max: 100 }] },
+      steps: ["Duduk di lantai atau di hujung kerusi, sebelah atau kedua-dua kaki lurus.", "Lentur badan ke depan sejauh yang boleh sambil belakang kekal panjang.", "Rasa regangan di belakang peha, bukan sakit.", "Tahan 15 saat sambil bernafas biasa.", "Ulang 3 kali. Buat set ini 5 kali sehari."],
+      fields: [{ key: "ulangan", label: "Ulangan", unit: "kali", def: 3, max: 1000 }, { key: "sesi", label: "Set hari ini", unit: "set", def: 5, max: 100 }] },
     { id: "walking", k: 2, name: "Berjalan", title: "Aktiviti Berjalan",
       rx: "Mulakan 20 minit atau kurang sehari. Tambah tempoh ikut kemampuan.",
       steps: ["Pakai kasut yang selesa. Bawa air.", "Mulakan 3–5 minit dengan langkah perlahan.", "Teruskan dengan rentak sederhana: masih boleh bercakap tetapi tidak boleh menyanyi.", "Akhiri dengan 3–5 minit langkah perlahan.", "Tambah 2–5 minit setiap minggu jika selesa. Sasaran jangka panjang: 30–45 minit, kerana tawaf dan sa'i memerlukan berjalan jauh."],

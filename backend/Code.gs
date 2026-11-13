@@ -47,7 +47,7 @@ var ITEMS = {
     olstand: { name: 'One-Leg Stand', f: { kanan: ['Kaki kanan', 'saat', 1, 600], kiri: ['Kaki kiri', 'saat', 1, 600] } }
   },
   ex: {
-    sitreach: { name: 'Sit and Reach', f: { ulangan: ['Ulangan', 'kali', 1, 1000], sesi: ['Sesi hari ini', 'kali', 1, 100] } },
+    sitreach: { name: 'Sit and Reach', f: { ulangan: ['Ulangan', 'kali', 1, 1000], sesi: ['Set hari ini', 'set', 1, 100] } },
     walking: { name: 'Berjalan', f: { minit: ['Tempoh', 'minit', 1, 1440], langkah: ['Langkah', 'langkah', 0, 200000] } },
     armcurl: { name: 'Arm curl', f: { set: ['Set', 'set', 1, 100], ulangan: ['Ulangan setiap set', 'kali', 1, 1000] } },
     sittostand: { name: 'Sit to stand', f: { set: ['Set', 'set', 1, 100], ulangan: ['Ulangan setiap set', 'kali', 1, 1000] } },
