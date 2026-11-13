@@ -73,7 +73,7 @@
 
   // Gambar ilustrasi: img/ujian-<id>.jpg atau img/senaman-<id>.jpg (cuba .png jika .jpg tiada; disembunyi jika tiada langsung)
   function pic(kind, id, alt, cls) {
-    const b = `img/${kind}-${id}`;
+    const b = cls === "thumb" ? `img/thumb/${kind}-${id}` : `img/${kind}-${id}`;
     return `<figure class="pic ${cls || ""}"><img src="${b}.jpg" alt="${esc(alt)}" loading="lazy" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='${b}.png'}else{this.closest('figure').remove()}"></figure>`;
   }
 

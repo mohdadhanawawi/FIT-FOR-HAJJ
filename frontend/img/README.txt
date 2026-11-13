@@ -17,3 +17,6 @@ SENAMAN
   senaman-other.jpg       Senaman lain (pilihan)
 
 Saiz disyorkan: lebar 800-1200 px, bawah 300 KB setiap satu.
+
+THUMBNAIL (kad senarai) diambil dari folder img/thumb/ dengan nama fail yang sama.
+Sumber gambar: slide "Fit For Hajj 2026", Jawatankuasa Teknikal Fisioterapi Kebangsaan, KKM.

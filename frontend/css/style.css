@@ -269,3 +269,4 @@ main>*,.screen>*{min-width:0}
 .pic img{display:block;width:100%;height:auto;max-height:460px;object-fit:contain;background:#fff}
 .pic.thumb{border:0;border-radius:10px;margin:-2px 0 4px}
 .pic.thumb img{height:140px;max-height:none;object-fit:cover}
+.pic.thumb img{object-position:center 25%}
