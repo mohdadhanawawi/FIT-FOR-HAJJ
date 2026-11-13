@@ -71,6 +71,12 @@
     </div>`).join("")}</div>`;
   }
 
+  // Gambar ilustrasi: img/ujian-<id>.jpg atau img/senaman-<id>.jpg (cuba .png jika .jpg tiada; disembunyi jika tiada langsung)
+  function pic(kind, id, alt, cls) {
+    const b = `img/${kind}-${id}`;
+    return `<figure class="pic ${cls || ""}"><img src="${b}.jpg" alt="${esc(alt)}" loading="lazy" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='${b}.png'}else{this.closest('figure').remove()}"></figure>`;
+  }
+
   /* ---------- views ---------- */
   function vLoading() {
     if (st.loadErr) return `<section class="screen"><div class="card" style="display:grid;gap:12px;text-align:center">
@@ -106,7 +112,7 @@
       const rs = all.filter(r => r.type === "test" && r.itemId === t.id);
       const pre = rs.some(r => r.fase === "PRE"), post = rs.some(r => r.fase === "POST");
       return `<a class="tile k${k}" href="#/ujian/${t.id}" style="text-decoration:none">
-        <span class="k">Komponen ${k}</span><h3>${esc(t.name)}</h3><p>${esc(t.purpose)}</p>
+        ${pic("ujian", t.id, "", "thumb")}<span class="k">Komponen ${k}</span><h3>${esc(t.name)}</h3><p>${esc(t.purpose)}</p>
         <span class="meta"><span class="dot ${pre ? "on" : ""}"></span>PRE ${pre ? "✓" : ""}<span class="dot ${post ? "on" : ""}" style="margin-left:10px"></span>POST ${post ? "✓" : ""}</span>
       </a>`;
     }).join("")).join("");
@@ -125,6 +131,7 @@
       <a class="back" href="#/ujian" style="text-decoration:none">${icon.back} Semua ujian</a>
       <div class="dhead k${t.k}"><span class="k">Komponen ${t.k} · ${KOMP[t.k].name}</span><h1>Ujian ${esc(t.name)}</h1><p>${esc(t.purpose)}</p></div>
       <div class="sec"><h2>Peralatan</h2><div class="chips">${t.equip.map(e => `<span class="chip">${esc(e)}</span>`).join("")}</div></div>
+      ${pic("ujian", t.id, "Gambar ujian " + t.name)}
       <div class="sec"><h2>Prosedur ujian</h2><ol class="proc">${t.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
       <div class="warn"><span aria-hidden="true">⚠</span><span><b>Keselamatan:</b> ${esc(t.safety)}</span></div>
       <form class="card form ${ed ? "editing" : ""}" id="testForm" novalidate>
@@ -148,7 +155,7 @@
     const tiles = EXS.map(e => {
       const n = all.filter(r => r.type === "ex" && r.itemId === e.id).length;
       return `<a class="tile k${e.k}" href="#/senaman/${e.id}" style="text-decoration:none">
-        <span class="k">${e.k ? `Komponen ${e.k}` : "Tambahan"}</span><h3>${esc(e.title)}</h3><p>${esc(e.rx)}</p>
+        ${pic("senaman", e.id, "", "thumb")}<span class="k">${e.k ? `Komponen ${e.k}` : "Tambahan"}</span><h3>${esc(e.title)}</h3><p>${esc(e.rx)}</p>
         <span class="meta">${n} log</span></a>`;
     }).join("");
     return `<section class="screen">
@@ -166,6 +173,7 @@
       <a class="back" href="#/senaman" style="text-decoration:none">${icon.back} Semua aktiviti</a>
       <div class="dhead k${e.k}"><span class="k">${e.k ? `Komponen ${e.k} · ${KOMP[e.k].name}` : "Tambahan"}</span><h1>${esc(e.title)}</h1>
         <div class="rx"><span aria-hidden="true">🎯</span><span>${esc(e.rx)}</span></div></div>
+      ${pic("senaman", e.id, "Gambar " + e.title)}
       <div class="sec"><h2>Cara melakukan</h2><ol class="proc">${e.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
       <form class="card form ${ed ? "editing" : ""}" id="exForm" novalidate>
         <div class="formhead"><h2>${ed ? "Edit log " + fmt(ed.date) : "Log senaman anda"}</h2></div>
