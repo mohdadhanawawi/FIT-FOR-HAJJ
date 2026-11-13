@@ -77,6 +77,18 @@
     return `<figure class="pic ${cls || ""}"><img src="${b}.jpg" alt="${esc(alt)}" loading="lazy" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='${b}.png'}else{this.closest('figure').remove()}"></figure>`;
   }
 
+  // Video YouTube: papar gambar kecil dahulu (jimat data), muat video bila ditekan
+  function video(k) {
+    const K = KOMP[k]; if (!K || !K.video) return "";
+    return `<div class="sec"><h2>Video panduan</h2>
+      <div class="yt" data-act="yt" data-v="${esc(K.video)}" role="button" tabindex="0" aria-label="Main video ${esc(K.vtitle)}">
+        <img src="https://i.ytimg.com/vi/${esc(K.video)}/hqdefault.jpg" alt="" loading="lazy">
+        <span class="yt-play" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+        <span class="yt-cap">${esc(K.vtitle)}</span>
+      </div>
+      <a class="yt-link" href="https://youtu.be/${esc(K.video)}" target="_blank" rel="noopener">Buka di YouTube ↗</a></div>`;
+  }
+
   /* ---------- views ---------- */
   function vLoading() {
     if (st.loadErr) return `<section class="screen"><div class="card" style="display:grid;gap:12px;text-align:center">
@@ -174,6 +186,7 @@
       <div class="dhead k${e.k}"><span class="k">${e.k ? `Komponen ${e.k} · ${KOMP[e.k].name}` : "Tambahan"}</span><h1>${esc(e.title)}</h1>
         <div class="rx"><span aria-hidden="true">🎯</span><span>${esc(e.rx)}</span></div></div>
       ${pic("senaman", e.id, "Gambar " + e.title)}
+      ${video(e.k)}
       <div class="sec"><h2>Cara melakukan</h2><ol class="proc">${e.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
       <form class="card form ${ed ? "editing" : ""}" id="exForm" novalidate>
         <div class="formhead"><h2>${ed ? "Edit log " + fmt(ed.date) : "Log senaman anda"}</h2></div>
@@ -267,6 +280,11 @@
         return;
       }
       if (act === "retry") { load(); return; }
+      if (act === "yt") {
+        const id = a.dataset.v;
+        a.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="Video panduan" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
+        return;
+      }
       if (act === "edit") {
         st.editing = a.dataset.rid; st.pendingDel = null; render();
         const f = $("form.card"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -287,6 +305,10 @@
     if (e.target.closest("#sync")) { Store.flush(); return; }
     const f = e.target.closest("#fase button");
     if (f) { if (!st.editing) st.fase = f.dataset.f; document.querySelectorAll("#fase button").forEach(b => b.setAttribute("aria-pressed", b === f)); }
+  });
+
+  document.addEventListener("keydown", e => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".yt[data-act=yt]")) { e.preventDefault(); e.target.click(); }
   });
 
   document.addEventListener("submit", e => {

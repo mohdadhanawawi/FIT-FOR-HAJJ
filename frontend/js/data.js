@@ -1,7 +1,10 @@
 /* FIT FOR HAJJ — kandungan ujian & senaman (sumber: prototaip) */
 window.FFH_DATA = (function () {
   const KOMP = {
-    1: { name: "Regang & Pulih" }, 2: { name: "Jalan & Stamina" }, 3: { name: "Kuat & Tahan" }, 4: { name: "Imbang & Selamat" }
+    1: { name: "Regang & Pulih", video: "mtKQStcf0CQ", vtitle: "Fit for Hajj · Komponen 1 Regang dan Pulih" },
+    2: { name: "Jalan & Stamina", video: "fsAJ-5XTFlQ", vtitle: "Fit for Hajj · Komponen 2 Jalan dan Stamina" },
+    3: { name: "Kuat & Tahan", video: "WOogdXZhTRM", vtitle: "Fit for Hajj · Komponen 3 Kuat dan Tahan" },
+    4: { name: "Imbang & Selamat", video: "vw9CaIAQMH8", vtitle: "Fit for Hajj · Komponen 4 Imbang dan Selamat" }
   };
 
   const TESTS = [
