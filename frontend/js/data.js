@@ -4,7 +4,8 @@ window.FFH_DATA = (function () {
     1: { name: "Regang & Pulih", video: "mtKQStcf0CQ", vtitle: "Fit for Hajj · Komponen 1 Regang dan Pulih",
       tambahan: ["Regangan leher", "Regangan bahu", "Regangan pinggang", "Regangan pinggul", "Regangan punggung",
         "Regangan piriformis", "Regangan quadricep", "Regangan calf (betis)", "Regangan pergelangan kaki"] },
-    2: { name: "Jalan & Stamina", video: "fsAJ-5XTFlQ", vtitle: "Fit for Hajj · Komponen 2 Jalan dan Stamina" },
+    2: { name: "Jalan & Stamina", video: "fsAJ-5XTFlQ", vtitle: "Fit for Hajj · Komponen 2 Jalan dan Stamina",
+      tambahan: ["Jalan cepat", "Jalan berselang-seli", "Jalan durasi lama", "Jalan mendaki"] },
     3: { name: "Kuat & Tahan", video: "WOogdXZhTRM", vtitle: "Fit for Hajj · Komponen 3 Kuat dan Tahan" },
     4: { name: "Imbang & Selamat", video: "vw9CaIAQMH8", vtitle: "Fit for Hajj · Komponen 4 Imbang dan Selamat" }
   };
@@ -55,7 +56,7 @@ window.FFH_DATA = (function () {
       rx: "Tahan 15 saat, ulang 3 kali. Lakukan 5 kali sehari.",
       steps: ["Duduk di lantai atau di hujung kerusi, sebelah atau kedua-dua kaki lurus.", "Lentur badan ke depan sejauh yang boleh sambil belakang kekal panjang.", "Rasa regangan di belakang peha, bukan sakit.", "Tahan 15 saat sambil bernafas biasa.", "Ulang 3 kali. Buat set ini 5 kali sehari."],
       fields: [{ key: "ulangan", label: "Ulangan", unit: "kali", def: 3, max: 1000 }, { key: "sesi", label: "Set hari ini", unit: "set", def: 5, max: 100 }] },
-    { id: "walking", cara: "Aktiviti Berjalan", k: 2, name: "Berjalan", title: "Aktiviti Berjalan",
+    { id: "walking", cara: "Aktiviti Walking", k: 2, name: "Berjalan", title: "Aktiviti Berjalan",
       rx: "Mulakan 20 minit atau kurang sehari. Tambah tempoh ikut kemampuan.",
       steps: ["Pakai kasut yang selesa. Bawa air.", "Mulakan 3–5 minit dengan langkah perlahan.", "Teruskan dengan rentak sederhana: masih boleh bercakap tetapi tidak boleh menyanyi.", "Akhiri dengan 3–5 minit langkah perlahan.", "Tambah 2–5 minit setiap minggu jika selesa. Sasaran jangka panjang: 30–45 minit, kerana tawaf dan sa'i memerlukan berjalan jauh."],
       fields: [{ key: "minit", label: "Tempoh", unit: "minit", def: 20, max: 1440 }, { key: "langkah", label: "Langkah (pilihan)", unit: "langkah", optional: true, max: 200000 }] },
