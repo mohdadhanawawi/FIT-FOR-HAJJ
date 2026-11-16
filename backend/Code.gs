@@ -20,7 +20,7 @@ var SHEET_DEF = {
   USERS: ['userId', 'nama', 'umur', 'jantina', 'telefon', 'kumpulan', 'role', 'pinHash', 'salt', 'createdAt'],
   RECORDS: ['recordId', 'userId', 'nama', 'kumpulan', 'type', 'itemId', 'itemName', 'fase', 'date',
     'skor', 'jarak', 'hrPre', 'hrPeak', 'kanan', 'kiri', 'pushup', 'bilangan', 'ulangan', 'sesi', 'set',
-    'minit', 'langkah', 'namaSenaman', 'nota', 'createdAt', 'updatedAt', 'deleted'],
+    'minit', 'langkah', 'namaSenaman', 'nota', 'createdAt', 'updatedAt', 'deleted', 'tambahan'],
   SESSIONS: ['token', 'userId', 'expiresAt']
 };
 
@@ -28,7 +28,7 @@ var SHEET_DEF = {
 var TEXT_COLS = {
   USERS: ['userId', 'nama', 'jantina', 'telefon', 'kumpulan', 'role', 'pinHash', 'salt', 'createdAt'],
   RECORDS: ['recordId', 'userId', 'nama', 'kumpulan', 'type', 'itemId', 'itemName', 'fase', 'date',
-    'namaSenaman', 'nota', 'createdAt', 'updatedAt'],
+    'namaSenaman', 'nota', 'createdAt', 'updatedAt', 'tambahan'],
   SESSIONS: ['token', 'userId', 'expiresAt']
 };
 
@@ -229,7 +229,7 @@ function updateRecord_(req) {
     if (String(ex.userId) !== String(u.userId)) fail_('Anda tidak boleh mengubah rekod ini.');
     if (isDeleted_(ex)) fail_('Rekod ini telah dipadam.');
     var input = req.record || {};
-    var v = validateRecord_({ type: ex.type, itemId: ex.itemId, fase: input.fase, date: input.date, values: input.values, nota: input.nota });
+    var v = validateRecord_({ type: ex.type, itemId: ex.itemId, fase: input.fase, date: input.date, values: input.values, nota: input.nota, tambahan: input.tambahan });
     var obj = recRow_(u, v, id, str_(ex.createdAt), nowIso_());
     writeObj_('RECORDS', row, obj);
     return { ok: true, record: recOut_(obj) };
@@ -390,7 +390,15 @@ function validateRecord_(r) {
   });
   var nota = String(r.nota || '').trim();
   if (nota.length > 500) fail_('Catatan terlalu panjang (maksimum 500 aksara).');
-  return { type: type, itemId: itemId, itemName: item.name, fase: fase, date: date, values: values, nota: nota };
+  // Senaman tambahan (senarai tick, cth. 9 regangan Komponen 1) — senaman sahaja
+  var tambahan = [];
+  if (type === 'ex' && Array.isArray(r.tambahan)) {
+    r.tambahan.forEach(function (t) {
+      t = String(t || '').trim().replace(/[,;]/g, ' ').replace(/\s+/g, ' ');
+      if (t && t.length <= 60 && tambahan.indexOf(t) < 0 && tambahan.length < 20) tambahan.push(t);
+    });
+  }
+  return { type: type, itemId: itemId, itemName: item.name, fase: fase, date: date, values: values, nota: nota, tambahan: tambahan };
 }
 
 function checkPin_(pin) {
@@ -523,8 +531,21 @@ function appendObj_(name, obj) {
   return row;
 }
 function writeObj_(name, row, obj) {
+  ensureHeaders_(name);
   var sh = sheet_(name), h = headers_(sh);
   sh.getRange(row, 1, 1, h.length).setValues([h.map(function (k) { return cell_(obj[k]); })]);
+}
+// Tambah kolum baharu secara automatik jika Sheet lama belum ada (tanpa perlu run setup semula)
+function ensureHeaders_(name) {
+  var sh = sheet_(name), h = headers_(sh);
+  var missing = SHEET_DEF[name].filter(function (k) { return h.indexOf(k) < 0; });
+  if (!missing.length) return;
+  if (sh.getMaxColumns() < h.length + missing.length) sh.insertColumnsAfter(sh.getMaxColumns(), h.length + missing.length - sh.getMaxColumns());
+  sh.getRange(1, h.length + 1, 1, missing.length).setValues([missing])
+    .setFontWeight('bold').setBackground('#13294B').setFontColor('#FFFFFF');
+  var all = h.concat(missing);
+  if (sh.getMaxRows() > 1) applyTextFormat_(sh, name, all, 2, sh.getMaxRows() - 1);
+  HCACHE_[sh.getName()] = all;
 }
 function applyTextFormat_(sh, name, h, startRow, count) {
   h.forEach(function (col, i) {
@@ -582,7 +603,8 @@ function recRow_(u, v, id, createdAt, updatedAt) {
   var o = {
     recordId: id, userId: String(u.userId), nama: String(u.nama).trim(), kumpulan: String(u.kumpulan || '').trim(),
     type: v.type, itemId: v.itemId, itemName: v.itemName, fase: v.fase, date: v.date,
-    nota: v.nota, createdAt: createdAt, updatedAt: updatedAt, deleted: false
+    nota: v.nota, createdAt: createdAt, updatedAt: updatedAt, deleted: false,
+    tambahan: (v.tambahan || []).join(', ')
   };
   VALUE_KEYS.concat(['namaSenaman']).forEach(function (k) { o[k] = v.values[k] === undefined ? '' : v.values[k]; });
   return o;
@@ -598,6 +620,7 @@ function recOut_(r) {
   return {
     recordId: String(r.recordId), type: String(r.type), itemId: String(r.itemId), fase: String(r.fase || ''),
     date: dateStr_(r.date), values: values, nota: String(r.nota || '').trim(),
+    tambahan: String(r.tambahan || '').split(',').map(function (t) { return t.trim(); }).filter(String),
     createdAt: str_(r.createdAt), updatedAt: str_(r.updatedAt)
   };
 }

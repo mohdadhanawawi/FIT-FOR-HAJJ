@@ -63,7 +63,7 @@
     if (!list.length) return `<div class="empty">Belum ada rekod. Isi borang di atas untuk mula.</div>`;
     return `<div class="list">${list.map(r => `<div class="rec">
       <span class="d">${fmt(r.date)} ${isTest ? `<span class="tag ${r.fase === "POST" ? "post" : ""}">${esc(r.fase)}</span>` : ""}${pendTag(r)}</span>
-      <span class="v">${UI.valuesText(fields, r.values)}${r.nota ? ` · <i>${esc(r.nota)}</i>` : ""}</span>
+      <span class="v">${UI.valuesText(fields, r.values)}${UI.tambText(r)}${r.nota ? ` · <i>${esc(r.nota)}</i>` : ""}</span>
       <span class="acts">
         <button type="button" data-act="edit" data-rid="${esc(r.recordId)}">Edit</button>
         <button type="button" class="${st.pendingDel === r.recordId ? "confirm" : ""}" data-act="del" data-rid="${esc(r.recordId)}">${st.pendingDel === r.recordId ? "Sahkan padam" : "Padam"}</button>
@@ -80,13 +80,25 @@
   // Video YouTube: papar gambar kecil dahulu (jimat data), muat video bila ditekan
   function video(k) {
     const K = KOMP[k]; if (!K || !K.video) return "";
-    return `<div class="sec"><h2>Video panduan</h2>
+    const list = K.tambahan || [];
+    return `<div class="sec"><h2>Lakukan senaman tambahan Komponen ${esc(K.name)}</h2>
+      ${list.length ? `<p class="note" style="margin:-4px 0 10px">Ikut video di bawah. Tandakan senaman yang anda buat dalam borang log.</p>` : ""}
       <div class="yt" data-act="yt" data-v="${esc(K.video)}" role="button" tabindex="0" aria-label="Main video ${esc(K.vtitle)}">
         <img src="https://i.ytimg.com/vi/${esc(K.video)}/hqdefault.jpg" alt="" loading="lazy">
         <span class="yt-play" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
         <span class="yt-cap">${esc(K.vtitle)}</span>
       </div>
-      <a class="yt-link" href="https://youtu.be/${esc(K.video)}" target="_blank" rel="noopener">Buka di YouTube ↗</a></div>`;
+      <a class="yt-link" href="https://youtu.be/${esc(K.video)}" target="_blank" rel="noopener">Buka di YouTube ↗</a>
+      ${list.length ? `<ol class="tlist">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>` : ""}</div>`;
+  }
+  // Senarai tick senaman tambahan dalam borang log
+  function tambahanField(k, chosen) {
+    const list = (KOMP[k] && KOMP[k].tambahan) || [];
+    if (!list.length) return "";
+    const on = new Set(chosen || []);
+    return `<fieldset class="field checks" id="e-tamb"><legend class="lbl">Senaman tambahan Komponen ${esc(KOMP[k].name)} <span class="note">(pilihan)</span></legend>
+      ${list.map((t, i) => `<label><input type="checkbox" value="${esc(t)}" ${on.has(t) ? "checked" : ""}> ${esc(t)}</label>`).join("")}
+      <button type="button" class="linkbtn" data-act="tickall" style="justify-self:start">Tandakan semua</button></fieldset>`;
   }
 
   /* ---------- views ---------- */
@@ -186,12 +198,13 @@
       <div class="dhead k${e.k}"><span class="k">${e.k ? `Komponen ${e.k} · ${KOMP[e.k].name}` : "Tambahan"}</span><h1>${esc(e.title)}</h1>
         <div class="rx"><span aria-hidden="true">🎯</span><span>${esc(e.rx)}</span></div></div>
       ${pic("senaman", e.id, "Gambar " + e.title)}
+      <div class="sec"><h2>Cara bersenam bagi ${esc(e.cara || e.title)}</h2><ol class="proc">${e.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
       ${video(e.k)}
-      <div class="sec"><h2>Cara melakukan</h2><ol class="proc">${e.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
       <form class="card form ${ed ? "editing" : ""}" id="exForm" novalidate>
         <div class="formhead"><h2>${ed ? "Edit log " + fmt(ed.date) : "Log senaman anda"}</h2></div>
         <div class="field"><label for="e-date">Tarikh</label><input type="date" id="e-date" max="${today()}" value="${ed ? ed.date : today()}"></div>
         ${fieldsGrid(e.fields, "e", ed ? ed.values : defs)}
+        ${tambahanField(e.k, ed ? ed.tambahan : [])}
         <div class="field"><label for="e-nota">Nota</label><textarea id="e-nota" maxlength="500" placeholder="Contoh: lutut kanan rasa ketat">${esc(ed ? ed.nota : "")}</textarea></div>
         <p class="err" id="e-err" role="alert" hidden></p>
         <div class="btnrow">${ed ? `<button class="btn ghost" type="button" data-act="cancelEdit">Batal</button>` : ""}<button class="btn" type="submit">${ed ? "Simpan perubahan" : "Simpan log"}</button></div>
@@ -280,6 +293,7 @@
         return;
       }
       if (act === "retry") { load(); return; }
+      if (act === "tickall") { const bs = [...document.querySelectorAll("#e-tamb input")]; const all = bs.every(b => b.checked); bs.forEach(b => b.checked = !all); a.textContent = all ? "Tandakan semua" : "Buang semua tanda"; return; }
       if (act === "yt") {
         const id = a.dataset.v;
         a.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="Video panduan" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
@@ -335,7 +349,8 @@
       const date = $("#e-date").value;
       const bad = err || dateErr(date, "#e-date");
       if (bad) { errEl.textContent = bad.msg; errEl.hidden = false; bad.el && bad.el.focus(); return; }
-      const rec = { type: "ex", itemId: ex.id, date, values: v, nota: $("#e-nota").value.trim() };
+      const tamb = [...document.querySelectorAll("#e-tamb input:checked")].map(i => i.value);
+      const rec = { type: "ex", itemId: ex.id, date, values: v, nota: $("#e-nota").value.trim(), tambahan: tamb };
       if (st.editing) { Store.update(st.editing, rec); st.editing = null; UI.toast("Perubahan disimpan"); }
       else { Store.add(rec); UI.toast("Disimpan"); }
       render();

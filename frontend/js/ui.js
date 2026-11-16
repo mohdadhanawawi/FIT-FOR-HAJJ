@@ -1,6 +1,6 @@
 /* FIT FOR HAJJ — utiliti UI dikongsi (app jemaah, log masuk, dashboard fisio) */
 window.UI = (function () {
-  const { TESTS, EXS, DAYS } = window.FFH_DATA;
+  const { TESTS, EXS, DAYS, KOMP } = window.FFH_DATA;
 
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -34,6 +34,13 @@ window.UI = (function () {
     v = v || {};
     return fields.filter(f => v[f.key] !== undefined && v[f.key] !== "").map(f => f.type === "text" ? `<b>${esc(v[f.key])}</b>` :
       `${esc(f.label.replace(/ \(pilihan\)/, ""))}: <b>${esc(v[f.key])}</b> ${esc(f.unit)}`).join(" · ");
+  }
+
+  // Senaman tambahan (cth. 9 regangan Komponen 1)
+  const tambList = r => Array.isArray(r.tambahan) ? r.tambahan.filter(Boolean) : [];
+  function tambText(r) {
+    const t = tambList(r);
+    return t.length ? ` · Senaman tambahan (${t.length}): ${t.map(esc).join(", ")}` : "";
   }
 
   // Ujian dibuat /6 → 5 ujian + 1-Minute Push-Up
@@ -78,7 +85,8 @@ window.UI = (function () {
     const otherNames = [...new Set(exs.filter(r => r.itemId === "other" && dates.includes(r.date)).map(exName))];
     return [
       ...EXS.filter(e => e.id !== "other").map(e => ({ label: e.name, match: r => r.itemId === e.id })),
-      ...otherNames.map(n => ({ label: n, match: r => r.itemId === "other" && exName(r) === n }))
+      ...otherNames.map(n => ({ label: n, match: r => r.itemId === "other" && exName(r) === n })),
+      ...Object.keys(KOMP).filter(k => KOMP[k].tambahan).map(k => ({ label: `Tambahan ${KOMP[k].name}`, match: r => { const e = EXS.find(x => x.id === r.itemId); return e && String(e.k) === String(k) && tambList(r).length > 0; } }))
     ].map(g => ({ label: g.label, days: dates.map(d => exs.some(r => r.date === d && g.match(r))) }));
   }
 
@@ -101,7 +109,7 @@ window.UI = (function () {
 
     const exRows = [...exs].sort(byDateDesc).map(r => {
       const e = EXS.find(x => x.id === r.itemId); if (!e) return "";
-      return `<tr><td>${fmt(r.date)}</td><td>${esc(exName(r))}</td><td class="wrap">${valuesText(e.fields.filter(f => f.type !== "text"), r.values) || "—"}</td><td class="sub wrap">${esc(r.nota || "")}</td></tr>`;
+      return `<tr><td>${fmt(r.date)}</td><td>${esc(exName(r))}</td><td class="wrap">${(valuesText(e.fields.filter(f => f.type !== "text"), r.values) || "—") + tambText(r)}</td><td class="sub wrap">${esc(r.nota || "")}</td></tr>`;
     }).join("");
 
     const tab = st.diariTab;
@@ -140,7 +148,7 @@ window.UI = (function () {
     const dates = weekDates(st.weekOffset);
     const wk = weekRows(exs, dates).map(g => `<tr><td>${esc(g.label)}</td>${g.days.map(on => `<td class="c">${on ? "✓" : ""}</td>`).join("")}</tr>`).join("");
     const logs = exs.filter(r => r.date >= dates[0] && r.date <= dates[6]).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 14);
-    const logRows = logs.map(r => { const e = EXS.find(x => x.id === r.itemId); return `<tr><td>${fmt(r.date)}</td><td>${esc(exName(r))}</td><td>${e ? valuesText(e.fields.filter(f => f.type !== "text"), r.values) : ""}</td><td>${esc(r.nota || "")}</td></tr>`; }).join("");
+    const logRows = logs.map(r => { const e = EXS.find(x => x.id === r.itemId); return `<tr><td>${fmt(r.date)}</td><td>${esc(exName(r))}</td><td>${e ? valuesText(e.fields.filter(f => f.type !== "text"), r.values) + tambText(r) : ""}</td><td>${esc(r.nota || "")}</td></tr>`; }).join("");
     return `<section class="print-sheet" aria-hidden="true">
       <header class="ps-head">${icon.kaabah}<div><h1>DIARI SENAMAN FIT FOR HAJJ</h1><p>Komponen Persediaan Kesihatan Fizikal Jemaah Haji</p></div></header>
       <table class="ps-info"><tr><th>Nama</th><td colspan="3">${esc(u.nama)}</td></tr>
@@ -212,5 +220,5 @@ window.UI = (function () {
     else if (e.key === "Backspace") { p.press("del"); e.preventDefault(); }
   });
 
-  return { $, esc, pad, iso, today, fmt, initials, addDays, mondayOf, toast, icon, latest, byDateDesc, valuesText, testsDone, activeDays, exName, diariHTML, diariClick, pinPadHTML, PinPad };
+  return { $, esc, pad, iso, today, fmt, initials, addDays, mondayOf, toast, icon, latest, byDateDesc, valuesText, tambText, testsDone, activeDays, exName, diariHTML, diariClick, pinPadHTML, PinPad };
 })();

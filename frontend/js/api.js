@@ -68,7 +68,7 @@
     (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => a[i] = Math.random() * 256);
     return "R" + Date.now().toString(36) + Array.from(a, b => b.toString(36).padStart(2, "0")).join("").slice(0, 8);
   }
-  const strip = r => ({ recordId: r.recordId, type: r.type, itemId: r.itemId, fase: r.fase || "", date: r.date, values: r.values || {}, nota: r.nota || "" });
+  const strip = r => ({ recordId: r.recordId, type: r.type, itemId: r.itemId, fase: r.fase || "", date: r.date, values: r.values || {}, nota: r.nota || "", tambahan: Array.isArray(r.tambahan) ? r.tambahan : [] });
 
   function merge(server, queue) {
     const m = new Map(server.map(r => [r.recordId, r]));
