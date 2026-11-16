@@ -155,6 +155,10 @@
           }
           this.inflight = null;
           this.queue.shift();
+          // Pelayan lama (Code.gs belum dikemas kini) tidak memulangkan medan 'tambahan'
+          if (res.record && op.record && (op.record.tambahan || []).length && !("tambahan" in res.record)) {
+            this.emit("error", "Senaman tambahan TIDAK disimpan: Code.gs di Google Apps Script belum dikemas kini. Sila hubungi fisio.");
+          }
           if (res.record && !this.queue.some(q => q.recordId === op.recordId)) {
             this.recs = this.list().map(r => r.recordId === op.recordId ? res.record : r);
           }
