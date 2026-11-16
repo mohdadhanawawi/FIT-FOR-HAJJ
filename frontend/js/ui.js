@@ -81,14 +81,25 @@ window.UI = (function () {
     const mon = mondayOf(new Date()); mon.setDate(mon.getDate() + offset * 7);
     return [...Array(7)].map((_, i) => { const d = new Date(mon); d.setDate(mon.getDate() + i); return iso(d); });
   }
+  // Grid mingguan: semua senaman utama + setiap senaman tambahan, dikumpul ikut komponen
   function weekRows(exs, dates) {
+    const rows = [];
+    const add = (label, kind, match) => rows.push({ label, kind, days: dates.map(d => exs.some(r => r.date === d && match(r))) });
+    [1, 2, 3, 4].forEach(k => {
+      rows.push({ label: `Komponen ${k} · ${KOMP[k].name}`, kind: "head" });
+      EXS.filter(e => e.k === k).forEach(e => {
+        add(e.name, "main", r => r.itemId === e.id);
+        (e.tambahan || []).forEach(t => add(t, "sub", r => r.itemId === e.id && tambList(r).includes(t)));
+      });
+    });
     const otherNames = [...new Set(exs.filter(r => r.itemId === "other" && dates.includes(r.date)).map(exName))];
-    return [
-      ...EXS.filter(e => e.id !== "other").map(e => ({ label: e.name, match: r => r.itemId === e.id })),
-      ...otherNames.map(n => ({ label: n, match: r => r.itemId === "other" && exName(r) === n })),
-      ...EXS.filter(e => e.tambahan && e.tambahan.length).map(e => ({ label: e.tgrid || ("Tambahan " + e.name), match: r => r.itemId === e.id && tambList(r).length > 0 }))
-    ].map(g => ({ label: g.label, days: dates.map(d => exs.some(r => r.date === d && g.match(r))) }));
+    if (otherNames.length) {
+      rows.push({ label: "Senaman lain", kind: "head" });
+      otherNames.forEach(n => add(n, "main", r => r.itemId === "other" && exName(r) === n));
+    }
+    return rows;
   }
+
 
   /* ---------- Diari (dikongsi app & fisio) ---------- */
   // st: { diariTab, weekOffset } ; opts: { readOnly }
@@ -104,7 +115,8 @@ window.UI = (function () {
     }).join("");
 
     const dates = weekDates(st.weekOffset);
-    const wk = weekRows(exs, dates).map(g => `<tr><td><b>${esc(g.label)}</b></td>${g.days.map(on => `<td><span class="tick ${on ? "on" : ""}" role="img" aria-label="${on ? "Dilakukan" : "Tidak"}">${on ? "✓" : ""}</span></td>`).join("")}</tr>`).join("");
+    const wk = weekRows(exs, dates).map(g => g.kind === "head" ? `<tr class="wk-h"><td colspan="8">${esc(g.label)}</td></tr>` :
+      `<tr class="wk-${g.kind}"><td>${g.kind === "main" ? `<b>${esc(g.label)}</b>` : esc(g.label)}</td>${g.days.map(on => `<td><span class="tick ${on ? "on" : ""}" role="img" aria-label="${on ? "Dilakukan" : "Tidak"}">${on ? "✓" : ""}</span></td>`).join("")}</tr>`).join("");
     const nActive = activeDays(exs, dates[0], dates[6]);
 
     const exRows = [...exs].sort(byDateDesc).map(r => {
@@ -146,8 +158,9 @@ window.UI = (function () {
     const rows = prePostRows(tests).map(x => `<tr>${x.first ? `<td rowspan="${x.span}"><b>${esc(x.t.name)}</b><br><small>Komponen ${x.t.k}</small></td>` : ""}
       <td>${esc(x.f.label.replace(/ \(pilihan\)/, ""))} (${esc(x.f.unit)})</td><td class="c">${num(x.a)}</td><td class="c">${num(x.b)}</td><td class="c"><b>${x.d}</b></td></tr>`).join("");
     const dates = weekDates(st.weekOffset);
-    const wk = weekRows(exs, dates).map(g => `<tr><td>${esc(g.label)}</td>${g.days.map(on => `<td class="c">${on ? "✓" : ""}</td>`).join("")}</tr>`).join("");
-    const logs = exs.filter(r => r.date >= dates[0] && r.date <= dates[6]).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 14);
+    const wk = weekRows(exs, dates).map(g => g.kind === "head" ? `<tr class="ps-h"><td colspan="8">${esc(g.label)}</td></tr>` :
+      `<tr class="ps-${g.kind}"><td>${g.kind === "main" ? `<b>${esc(g.label)}</b>` : esc(g.label)}</td>${g.days.map(on => `<td class="c">${on ? "✓" : ""}</td>`).join("")}</tr>`).join("");
+    const logs = exs.filter(r => r.date >= dates[0] && r.date <= dates[6]).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 40);
     const logRows = logs.map(r => { const e = EXS.find(x => x.id === r.itemId); return `<tr><td>${fmt(r.date)}</td><td>${esc(exName(r))}</td><td>${e ? valuesText(e.fields.filter(f => f.type !== "text"), r.values) + tambText(r) : ""}</td><td>${esc(r.nota || "")}</td></tr>`; }).join("");
     return `<section class="print-sheet" aria-hidden="true">
       <header class="ps-head">${icon.kaabah}<div><h1>DIARI SENAMAN FIT FOR HAJJ</h1><p>Komponen Persediaan Kesihatan Fizikal Jemaah Haji</p></div></header>
@@ -157,8 +170,8 @@ window.UI = (function () {
       <h2>A. Penilaian Kecergasan</h2>
       <table class="ps-t"><thead><tr><th>Ujian</th><th>Ukuran</th><th>PRE<br><small>${fmt(preD)}</small></th><th>POST<br><small>${fmt(postD)}</small></th><th>Beza</th></tr></thead><tbody>${rows}</tbody></table>
       <h2>B. Rekod Aktiviti Mingguan · ${fmt(dates[0])} – ${fmt(dates[6])}</h2>
-      <table class="ps-t"><thead><tr><th>Senaman</th>${DAYS.map((d, i) => `<th>${d.slice(0, 3)}<br><small>${dates[i].slice(8)}/${dates[i].slice(5, 7)}</small></th>`).join("")}</tr></thead><tbody>${wk}</tbody></table>
-      <h2>C. Log Senaman Minggu Ini</h2>
+      <table class="ps-t ps-wk"><thead><tr><th>Senaman</th>${DAYS.map((d, i) => `<th>${d.slice(0, 3)}<br><small>${dates[i].slice(8)}/${dates[i].slice(5, 7)}</small></th>`).join("")}</tr></thead><tbody>${wk}</tbody></table>
+      <h2 class="ps-c">C. Log Senaman Minggu Ini</h2>
       ${logRows ? `<table class="ps-t"><thead><tr><th>Tarikh</th><th>Senaman</th><th>Dilakukan</th><th>Nota</th></tr></thead><tbody>${logRows}</tbody></table>` : `<p class="ps-empty">Tiada log senaman untuk minggu ini.</p>`}
       <div class="ps-sign"><div><span>Catatan fisioterapis</span></div><div><span>Tandatangan &amp; cop</span></div><div><span>Tarikh</span></div></div>
       <footer class="ps-foot">Dicetak ${fmt(today())} · FIT FOR HAJJ · Hentikan senaman dan dapatkan rawatan jika sakit dada, sesak nafas teruk, pening atau berdebar-debar.</footer>

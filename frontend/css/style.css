@@ -288,3 +288,22 @@ main>*,.screen>*{min-width:0}
 .checks label:has(input:checked){border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--bg))}
 .checks input{width:26px;height:26px;accent-color:var(--good);flex:none}
 .tlist-h{font-size:17px;margin:14px 0 0}
+
+/* grid mingguan berkumpulan (semua senaman) */
+.wk tr.wk-h td{background:var(--bg);color:var(--muted);font-family:var(--f-head);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;text-align:left !important;padding:8px 12px}
+.wk tr.wk-sub td:first-child{padding-left:26px;color:var(--muted);font-size:14px}
+.wk td:first-child{white-space:normal;min-width:150px;max-width:210px}
+.wk tr.wk-sub .tick{width:24px;height:24px;border-radius:6px}
+@media print{
+  .print-sheet .ps-wk th,.print-sheet .ps-wk td{padding:1px 4px;font-size:7.5pt;line-height:1.15}
+  .print-sheet .ps-wk tr.ps-h td{background:#E8ECF3 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-weight:700;font-size:7.5pt;text-align:left}
+  .print-sheet .ps-wk tr.ps-sub td:first-child{padding-left:12px;color:#333}
+  .print-sheet .ps-wk td:first-child{width:38%;text-align:left}
+  .print-sheet .ps-wk{page-break-inside:auto}
+  .print-sheet .ps-wk tr{page-break-inside:avoid}
+}
+@media print{.print-sheet h2.ps-c{page-break-before:always;break-before:page;margin-top:0}}
+.wk th:first-child,.wk td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}
+.wk th:first-child{background:var(--navy)}
+.wk tr.wk-h td{position:sticky;left:0;background:var(--bg)}
+@media print{.wk th:first-child,.wk td:first-child{position:static;box-shadow:none}}
