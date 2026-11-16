@@ -77,10 +77,10 @@
     return `<figure class="pic ${cls || ""}"><img src="${b}.jpg" alt="${esc(alt)}" loading="lazy" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='${b}.png'}else{this.closest('figure').remove()}"></figure>`;
   }
 
-  // Video YouTube: papar gambar kecil dahulu (jimat data), muat video bila ditekan
-  function video(k) {
-    const K = KOMP[k]; if (!K || !K.video) return "";
-    const list = K.tambahan || [];
+  // Video YouTube ikut komponen + senarai senaman tambahan aktiviti. Gambar kecil dahulu (jimat data)
+  function video(e) {
+    const K = KOMP[e.k]; if (!K || !K.video) return "";
+    const list = e.tambahan || [];
     return `<div class="sec"><h2>Lakukan senaman tambahan Komponen ${esc(K.name)}</h2>
       ${list.length ? `<p class="note" style="margin:-4px 0 10px">Ikut video di bawah. Tandakan senaman yang anda buat dalam borang log.</p>` : ""}
       <div class="yt" data-act="yt" data-v="${esc(K.video)}" role="button" tabindex="0" aria-label="Main video ${esc(K.vtitle)}">
@@ -89,15 +89,15 @@
         <span class="yt-cap">${esc(K.vtitle)}</span>
       </div>
       <a class="yt-link" href="https://youtu.be/${esc(K.video)}" target="_blank" rel="noopener">Buka di YouTube ↗</a>
-      ${list.length ? `<ol class="tlist">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>` : ""}</div>`;
+      ${list.length ? `<h3 class="tlist-h">Senaman ${esc(e.tlabel || "")}</h3><ol class="tlist">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>` : ""}</div>`;
   }
   // Senarai tick senaman tambahan dalam borang log
-  function tambahanField(k, chosen) {
-    const list = (KOMP[k] && KOMP[k].tambahan) || [];
+  function tambahanField(e, chosen) {
+    const list = e.tambahan || [];
     if (!list.length) return "";
     const on = new Set(chosen || []);
-    return `<fieldset class="field checks" id="e-tamb"><legend class="lbl">Senaman tambahan Komponen ${esc(KOMP[k].name)} <span class="note">(pilihan)</span></legend>
-      ${list.map((t, i) => `<label><input type="checkbox" value="${esc(t)}" ${on.has(t) ? "checked" : ""}> ${esc(t)}</label>`).join("")}
+    return `<fieldset class="field checks" id="e-tamb"><legend class="lbl">Senaman tambahan ${esc(e.tlabel || "")} <span class="note">(pilihan)</span></legend>
+      ${list.map(t => `<label><input type="checkbox" value="${esc(t)}" ${on.has(t) ? "checked" : ""}> ${esc(t)}</label>`).join("")}
       <button type="button" class="linkbtn" data-act="tickall" style="justify-self:start">Tandakan semua</button></fieldset>`;
   }
 
@@ -199,12 +199,12 @@
         <div class="rx"><span aria-hidden="true">🎯</span><span>${esc(e.rx)}</span></div></div>
       ${pic("senaman", e.id, "Gambar " + e.title)}
       <div class="sec"><h2>Cara bersenam bagi ${esc(e.cara || e.title)}</h2><ol class="proc">${e.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol></div>
-      ${video(e.k)}
+      ${video(e)}
       <form class="card form ${ed ? "editing" : ""}" id="exForm" novalidate>
         <div class="formhead"><h2>${ed ? "Edit log " + fmt(ed.date) : "Log senaman anda"}</h2></div>
         <div class="field"><label for="e-date">Tarikh</label><input type="date" id="e-date" max="${today()}" value="${ed ? ed.date : today()}"></div>
         ${fieldsGrid(e.fields, "e", ed ? ed.values : defs)}
-        ${tambahanField(e.k, ed ? ed.tambahan : [])}
+        ${tambahanField(e, ed ? ed.tambahan : [])}
         <div class="field"><label for="e-nota">Nota</label><textarea id="e-nota" maxlength="500" placeholder="Contoh: lutut kanan rasa ketat">${esc(ed ? ed.nota : "")}</textarea></div>
         <p class="err" id="e-err" role="alert" hidden></p>
         <div class="btnrow">${ed ? `<button class="btn ghost" type="button" data-act="cancelEdit">Batal</button>` : ""}<button class="btn" type="submit">${ed ? "Simpan perubahan" : "Simpan log"}</button></div>

@@ -86,7 +86,7 @@ window.UI = (function () {
     return [
       ...EXS.filter(e => e.id !== "other").map(e => ({ label: e.name, match: r => r.itemId === e.id })),
       ...otherNames.map(n => ({ label: n, match: r => r.itemId === "other" && exName(r) === n })),
-      ...Object.keys(KOMP).filter(k => KOMP[k].tambahan).map(k => ({ label: `Tambahan ${KOMP[k].name}`, match: r => { const e = EXS.find(x => x.id === r.itemId); return e && String(e.k) === String(k) && tambList(r).length > 0; } }))
+      ...EXS.filter(e => e.tambahan && e.tambahan.length).map(e => ({ label: e.tgrid || ("Tambahan " + e.name), match: r => r.itemId === e.id && tambList(r).length > 0 }))
     ].map(g => ({ label: g.label, days: dates.map(d => exs.some(r => r.date === d && g.match(r))) }));
   }
 

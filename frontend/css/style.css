@@ -287,3 +287,4 @@ main>*,.screen>*{min-width:0}
 .checks label{display:flex;gap:12px;align-items:center;min-height:52px;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);font-weight:700;cursor:pointer}
 .checks label:has(input:checked){border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--bg))}
 .checks input{width:26px;height:26px;accent-color:var(--good);flex:none}
+.tlist-h{font-size:17px;margin:14px 0 0}

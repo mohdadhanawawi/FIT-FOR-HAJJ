@@ -1,11 +1,8 @@
 /* FIT FOR HAJJ — kandungan ujian & senaman (sumber: prototaip) */
 window.FFH_DATA = (function () {
   const KOMP = {
-    1: { name: "Regang & Pulih", video: "mtKQStcf0CQ", vtitle: "Fit for Hajj · Komponen 1 Regang dan Pulih",
-      tambahan: ["Regangan leher", "Regangan bahu", "Regangan pinggang", "Regangan pinggul", "Regangan punggung",
-        "Regangan piriformis", "Regangan quadricep", "Regangan calf (betis)", "Regangan pergelangan kaki"] },
-    2: { name: "Jalan & Stamina", video: "fsAJ-5XTFlQ", vtitle: "Fit for Hajj · Komponen 2 Jalan dan Stamina",
-      tambahan: ["Jalan cepat", "Jalan berselang-seli", "Jalan durasi lama", "Jalan mendaki"] },
+    1: { name: "Regang & Pulih", video: "mtKQStcf0CQ", vtitle: "Fit for Hajj · Komponen 1 Regang dan Pulih" },
+    2: { name: "Jalan & Stamina", video: "fsAJ-5XTFlQ", vtitle: "Fit for Hajj · Komponen 2 Jalan dan Stamina" },
     3: { name: "Kuat & Tahan", video: "WOogdXZhTRM", vtitle: "Fit for Hajj · Komponen 3 Kuat dan Tahan" },
     4: { name: "Imbang & Selamat", video: "vw9CaIAQMH8", vtitle: "Fit for Hajj · Komponen 4 Imbang dan Selamat" }
   };
@@ -26,7 +23,7 @@ window.FFH_DATA = (function () {
         { key: "jarak", label: "Jarak", unit: "m", step: "1", better: "up", max: 3000 },
         { key: "hrPre", label: "HR sebelum", unit: "bpm", step: "1", max: 250 },
         { key: "hrPeak", label: "Peak HR", unit: "bpm", step: "1", max: 250 }] },
-    { id: "armcurl", cara: "Aktiviti Arm Curl", k: 3, name: "30-Second Arm Curl", sub: "Kekuatan anggota atas",
+    { id: "armcurl", k: 3, name: "30-Second Arm Curl", sub: "Kekuatan anggota atas",
       purpose: "Menilai kekuatan dan daya tahan otot lengan.",
       equip: ["Kerusi tanpa lengan", "Dumbbell 2.3 kg (wanita) / 3.6 kg (lelaki)", "Jam randik"],
       steps: ["Duduk tegak di kerusi, belakang lurus, kaki rata di lantai.", "Pegang dumbbell di sisi badan, tapak tangan menghadap ke dalam.", "Bengkokkan siku sepenuhnya sambil memusing tapak tangan ke atas, kemudian luruskan semula sepenuhnya.", "Lengan atas kekal rapat pada badan sepanjang pergerakan.", "Kira bilangan ulangan lengkap dalam 30 saat.", "Ulang untuk lengan sebelah lagi.", "Pilihan: 1-Minute Push-Up (dinding, lutut atau penuh ikut kemampuan). Kira bilangan dalam 1 minit."],
@@ -52,19 +49,27 @@ window.FFH_DATA = (function () {
   ];
 
   const EXS = [
-    { id: "sitreach", cara: "Aktiviti Sit & Reach", k: 1, name: "Sit and Reach", title: "Aktiviti Sit-and-Reach",
+    { id: "sitreach", tlabel: "Komponen Regang & Pulih", tgrid: "Tambahan Regang & Pulih",
+      tambahan: ["Regangan leher", "Regangan bahu", "Regangan pinggang", "Regangan pinggul", "Regangan punggung", "Regangan piriformis", "Regangan quadricep", "Regangan calf (betis)", "Regangan pergelangan kaki"],
+      cara: "Aktiviti Sit & Reach", k: 1, name: "Sit and Reach", title: "Aktiviti Sit-and-Reach",
       rx: "Tahan 15 saat, ulang 3 kali. Lakukan 5 kali sehari.",
       steps: ["Duduk di lantai atau di hujung kerusi, sebelah atau kedua-dua kaki lurus.", "Lentur badan ke depan sejauh yang boleh sambil belakang kekal panjang.", "Rasa regangan di belakang peha, bukan sakit.", "Tahan 15 saat sambil bernafas biasa.", "Ulang 3 kali. Buat set ini 5 kali sehari."],
       fields: [{ key: "ulangan", label: "Ulangan", unit: "kali", def: 3, max: 1000 }, { key: "sesi", label: "Set hari ini", unit: "set", def: 5, max: 100 }] },
-    { id: "walking", cara: "Aktiviti Walking", k: 2, name: "Berjalan", title: "Aktiviti Berjalan",
+    { id: "walking", tlabel: "Komponen Jalan & Stamina", tgrid: "Tambahan Jalan & Stamina",
+      tambahan: ["Jalan cepat", "Jalan berselang-seli", "Jalan durasi lama", "Jalan mendaki"],
+      cara: "Aktiviti Walking", k: 2, name: "Berjalan", title: "Aktiviti Berjalan",
       rx: "Mulakan 20 minit atau kurang sehari. Tambah tempoh ikut kemampuan.",
       steps: ["Pakai kasut yang selesa. Bawa air.", "Mulakan 3–5 minit dengan langkah perlahan.", "Teruskan dengan rentak sederhana: masih boleh bercakap tetapi tidak boleh menyanyi.", "Akhiri dengan 3–5 minit langkah perlahan.", "Tambah 2–5 minit setiap minggu jika selesa. Sasaran jangka panjang: 30–45 minit, kerana tawaf dan sa'i memerlukan berjalan jauh."],
       fields: [{ key: "minit", label: "Tempoh", unit: "minit", def: 20, max: 1440 }, { key: "langkah", label: "Langkah (pilihan)", unit: "langkah", optional: true, max: 200000 }] },
-    { id: "armcurl", k: 3, name: "Arm curl", title: "Aktiviti Kekuatan · Anggota Atas",
+    { id: "armcurl", tlabel: "Komponen Kuat & Tahan Anggota Atas", tgrid: "Tambahan Kuat & Tahan (Atas)",
+      tambahan: ["Tekan tubi di dinding (wall push up)", "Tekan tubi semasa duduk (seated push up)", "Mengangkat bahu (shoulder overhead press)"],
+      cara: "Aktiviti Kekuatan", k: 3, name: "Arm curl", title: "Aktiviti Kekuatan · Anggota Atas",
       rx: "Arm curl 25 kali × 3 set, kiri dan kanan.",
       steps: ["Duduk tegak di kerusi. Pegang botol air 500 ml atau dumbbell ringan.", "Bengkokkan siku dan angkat beban ke arah bahu.", "Turunkan perlahan-lahan hingga lengan lurus.", "Buat 25 kali, kemudian tukar tangan.", "Rehat 1 minit antara set. Ulang 3 set."],
       fields: [{ key: "set", label: "Set", unit: "set", def: 3, max: 100 }, { key: "ulangan", label: "Ulangan setiap set", unit: "kali", def: 25, max: 1000 }] },
-    { id: "sittostand", cara: "Aktiviti Sit to Stand", k: 3, name: "Sit to stand", title: "Aktiviti Kekuatan · Anggota Kaki",
+    { id: "sittostand", tlabel: "Komponen Kuat & Tahan Anggota Kaki", tgrid: "Tambahan Kuat & Tahan (Kaki)",
+      tambahan: ["Mencangkung (squatting)", "Naik turun (stepping)", "Mengangkat tumit (calf raise)", "Buka kaki ke sisi (abduction)"],
+      cara: "Aktiviti Kekuatan", k: 3, name: "Sit to stand", title: "Aktiviti Kekuatan · Anggota Kaki",
       rx: "Duduk dan bangun dari kerusi 10 kali × 3 set.",
       steps: ["Duduk di kerusi yang kukuh, kaki rata di lantai.", "Silangkan tangan di dada (atau guna tangan jika perlu).", "Condongkan badan ke depan dan bangun hingga berdiri tegak.", "Duduk semula perlahan-lahan dengan terkawal.", "Buat 10 kali. Rehat 1 minit. Ulang 3 set."],
       fields: [{ key: "set", label: "Set", unit: "set", def: 3, max: 100 }, { key: "ulangan", label: "Ulangan setiap set", unit: "kali", def: 10, max: 1000 }] },
