@@ -78,14 +78,6 @@ Anda perlu: akaun Google, dan akaun Netlify percuma (boleh daftar guna akaun Goo
 
 > Bila anda ubah fail frontend (contoh `config.js`), buka site di Netlify, pergi ke **Deploys**, kemudian drag folder `frontend` sekali lagi ke kotak "Need to update your site? Drag and drop…".
 
-### Alternatif Langkah 6: GitHub Pages (tiada badge "Powered by Netlify", auto-update)
-1. Buka repo di GitHub, kemudian **Settings → Pages**.
-2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
-3. Pergi ke tab **Actions**, kemudian **Deploy frontend ke GitHub Pages → Run workflow** (atau tunggu kemas kini kod seterusnya).
-4. Selepas ±1 minit, app boleh dibuka di `https://<nama-github>.github.io/FIT-FOR-HAJJ/`.
-
-Setiap kali fail dalam `frontend/` dikemas kini di GitHub, site akan dikemas kini sendiri.
-
 ### Langkah 7: Cipta akaun fisio
 1. Buka URL Netlify anda, klik **Daftar baharu**, dan daftar macam jemaah biasa (guna nombor telefon anda sendiri).
 2. Buka Google Sheet, kemudian tab **USERS**. Cari baris anda dan tukar kolum **role** dari `jemaah` kepada **`fisio`**.
