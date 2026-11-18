@@ -286,7 +286,7 @@ main>*,.screen>*{min-width:0}
 .checks legend{margin-bottom:6px;padding:0}
 .checks label{display:flex;gap:12px;align-items:center;min-height:52px;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);font-weight:700;cursor:pointer}
 .checks label:has(input:checked){border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--bg))}
-.checks input{width:26px;height:26px;accent-color:var(--good);flex:none}
+.checks input[type=checkbox]{width:26px;height:26px;accent-color:var(--good);flex:none}
 .tlist-h{font-size:17px;margin:14px 0 0}
 
 /* grid mingguan berkumpulan (semua senaman) */
@@ -307,3 +307,15 @@ main>*,.screen>*{min-width:0}
 .wk th:first-child{background:var(--navy)}
 .wk tr.wk-h td{position:sticky;left:0;background:var(--bg)}
 @media print{.wk th:first-child,.wk td:first-child{position:static;box-shadow:none}}
+
+/* intensiti senaman tambahan */
+.checks .tk{border:1.5px solid var(--line);border-radius:12px;background:var(--bg)}
+.checks .tk.on{border-color:var(--good);background:color-mix(in srgb,var(--good) 10%,var(--bg))}
+.checks .tk label{border:0;background:none;min-height:52px}
+.checks .tk label:has(input:checked){background:none}
+.checks .ti{display:flex;align-items:center;gap:8px;padding:0 14px 12px 52px;flex-wrap:wrap}
+.checks .ti .unitwrap{flex:1 1 0;max-width:150px;min-width:0}
+.checks .ti input{width:100%;height:auto;min-height:48px;font-size:18px;padding:8px 12px}
+.checks .ti .unitwrap input{padding-right:44px;padding-left:10px}
+.checks .ti .u{right:10px;font-size:14px}
+.checks .ti .tx{font-weight:800;color:var(--muted)}

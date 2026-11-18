@@ -91,15 +91,43 @@
       <a class="yt-link" href="https://youtu.be/${esc(K.video)}" target="_blank" rel="noopener">Buka di YouTube ↗</a>
       ${list.length ? `<h3 class="tlist-h">Senaman ${esc(e.tlabel || "")}</h3><ol class="tlist">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>` : ""}</div>`;
   }
-  // Senarai tick senaman tambahan dalam borang log
+  // Senarai tick senaman tambahan + intensiti setiap satu (dibuka bila ditick)
+  const tFmt = (fields, vals) => fields.map(f => `${vals[f.key]} ${f.unit}`).join(" × ");
+  function tVals(fields, inten) {
+    const re = new RegExp("^" + fields.map(f => `(\\d+(?:\\.\\d+)?) ${f.unit}`).join(" × ") + "$");
+    const m = String(inten || "").match(re); const v = {};
+    fields.forEach((f, i) => v[f.key] = m ? m[i + 1] : f.def);
+    return v;
+  }
   function tambahanField(e, chosen) {
     const list = e.tambahan || [];
     if (!list.length) return "";
-    const on = new Set(chosen || []);
+    const fields = e.tfields || [];
+    const on = {}; (chosen || []).forEach(c => { const x = UI.tambParse(c); on[x.name] = x.inten; });
     return `<fieldset class="field checks" id="e-tamb"><legend class="lbl">Senaman tambahan ${esc(e.tlabel || "")} <span class="note">(pilihan)</span></legend>
-      ${list.map(t => `<label><input type="checkbox" value="${esc(t)}" ${on.has(t) ? "checked" : ""}> ${esc(t)}</label>`).join("")}
+      <p class="note" style="margin:0 0 4px">Tandakan senaman yang dibuat, kemudian isi intensiti.</p>
+      ${list.map((t, i) => { const ck = t in on; const v = tVals(fields, on[t]);
+        return `<div class="tk${ck ? " on" : ""}"><label><input type="checkbox" value="${esc(t)}" ${ck ? "checked" : ""}> ${esc(t)}</label>
+          <div class="ti" ${ck ? "" : "hidden"}>${fields.map(f => `<div class="unitwrap"><input type="number" inputmode="numeric" min="1" max="${f.max}" step="1" data-f="${f.key}" aria-label="${esc(f.label)} ${esc(t)}" value="${esc(v[f.key])}"><span class="u">${esc(f.unit)}</span></div>`).join(fields.length > 1 ? `<span class="tx">×</span>` : "")}</div></div>`; }).join("")}
       <button type="button" class="linkbtn" data-act="tickall" style="justify-self:start">Tandakan semua</button></fieldset>`;
   }
+  function readTambahan(e) {
+    const fields = e.tfields || []; const out = []; let err = null;
+    document.querySelectorAll("#e-tamb .tk").forEach(row => {
+      const cb = row.querySelector("input[type=checkbox]");
+      if (!cb.checked || err) return;
+      if (!fields.length) { out.push(cb.value); return; }
+      const v = {};
+      for (const f of fields) {
+        const el = row.querySelector(`[data-f="${f.key}"]`); const n = Number(el.value);
+        if (!el.value.trim() || !Number.isInteger(n) || n < 1 || n > f.max) { err = { msg: `Sila isi ${f.label.toLowerCase()} (1–${f.max}) untuk ${cb.value}.`, el }; return; }
+        v[f.key] = n;
+      }
+      out.push(`${cb.value}: ${tFmt(fields, v)}`);
+    });
+    return { list: out, err };
+  }
+
 
   /* ---------- views ---------- */
   function vLoading() {
@@ -293,7 +321,7 @@
         return;
       }
       if (act === "retry") { load(); return; }
-      if (act === "tickall") { const bs = [...document.querySelectorAll("#e-tamb input")]; const all = bs.every(b => b.checked); bs.forEach(b => b.checked = !all); a.textContent = all ? "Tandakan semua" : "Buang semua tanda"; return; }
+      if (act === "tickall") { const bs = [...document.querySelectorAll("#e-tamb input[type=checkbox]")]; const all = bs.every(b => b.checked); bs.forEach(b => { b.checked = !all; syncTk(b); }); a.textContent = all ? "Tandakan semua" : "Buang semua tanda"; return; }
       if (act === "yt") {
         const id = a.dataset.v;
         a.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="Video panduan" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
@@ -320,6 +348,9 @@
     const f = e.target.closest("#fase button");
     if (f) { if (!st.editing) st.fase = f.dataset.f; document.querySelectorAll("#fase button").forEach(b => b.setAttribute("aria-pressed", b === f)); }
   });
+
+  function syncTk(cb) { const row = cb.closest(".tk"); if (!row) return; row.classList.toggle("on", cb.checked); row.querySelector(".ti").hidden = !cb.checked; }
+  document.addEventListener("change", e => { if (e.target.matches("#e-tamb input[type=checkbox]")) syncTk(e.target); });
 
   document.addEventListener("keydown", e => {
     if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".yt[data-act=yt]")) { e.preventDefault(); e.target.click(); }
@@ -349,7 +380,9 @@
       const date = $("#e-date").value;
       const bad = err || dateErr(date, "#e-date");
       if (bad) { errEl.textContent = bad.msg; errEl.hidden = false; bad.el && bad.el.focus(); return; }
-      const tamb = [...document.querySelectorAll("#e-tamb input:checked")].map(i => i.value);
+      const tr = readTambahan(ex);
+      if (!err && tr.err) { errEl.textContent = tr.err.msg; errEl.hidden = false; tr.err.el.focus(); return; }
+      const tamb = tr.list;
       const rec = { type: "ex", itemId: ex.id, date, values: v, nota: $("#e-nota").value.trim(), tambahan: tamb };
       if (st.editing) { Store.update(st.editing, rec); st.editing = null; UI.toast("Perubahan disimpan"); }
       else { Store.add(rec); UI.toast("Disimpan"); }

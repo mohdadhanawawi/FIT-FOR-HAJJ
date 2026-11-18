@@ -36,11 +36,13 @@ window.UI = (function () {
       `${esc(f.label.replace(/ \(pilihan\)/, ""))}: <b>${esc(v[f.key])}</b> ${esc(f.unit)}`).join(" · ");
   }
 
-  // Senaman tambahan (cth. 9 regangan Komponen 1)
+  // Senaman tambahan. Disimpan sebagai "Nama" atau "Nama: 3 kali" / "Nama: 2 set × 10 kali" (dengan intensiti)
   const tambList = r => Array.isArray(r.tambahan) ? r.tambahan.filter(Boolean) : [];
+  const tambParse = s => { const i = String(s).indexOf(": "); return i < 0 ? { name: String(s), inten: "" } : { name: s.slice(0, i), inten: s.slice(i + 2) }; };
+  const tambNames = r => tambList(r).map(s => tambParse(s).name);
   function tambText(r) {
-    const t = tambList(r);
-    return t.length ? ` · Senaman tambahan (${t.length}): ${t.map(esc).join(", ")}` : "";
+    const t = tambList(r).map(tambParse);
+    return t.length ? ` · Senaman tambahan (${t.length}): ${t.map(x => x.inten ? `${esc(x.name)} <b>${esc(x.inten)}</b>` : esc(x.name)).join(", ")}` : "";
   }
 
   // Ujian dibuat /6 → 5 ujian + 1-Minute Push-Up
@@ -89,7 +91,7 @@ window.UI = (function () {
       rows.push({ label: `Komponen ${k} · ${KOMP[k].name}`, kind: "head" });
       EXS.filter(e => e.k === k).forEach(e => {
         add(e.name, "main", r => r.itemId === e.id);
-        (e.tambahan || []).forEach(t => add(t, "sub", r => r.itemId === e.id && tambList(r).includes(t)));
+        (e.tambahan || []).forEach(t => add(t, "sub", r => r.itemId === e.id && tambNames(r).includes(t)));
       });
     });
     const otherNames = [...new Set(exs.filter(r => r.itemId === "other" && dates.includes(r.date)).map(exName))];
@@ -233,5 +235,5 @@ window.UI = (function () {
     else if (e.key === "Backspace") { p.press("del"); e.preventDefault(); }
   });
 
-  return { $, esc, pad, iso, today, fmt, initials, addDays, mondayOf, toast, icon, latest, byDateDesc, valuesText, tambText, testsDone, activeDays, exName, diariHTML, diariClick, pinPadHTML, PinPad };
+  return { $, esc, pad, iso, today, fmt, initials, addDays, mondayOf, toast, icon, latest, byDateDesc, valuesText, tambText, tambParse, testsDone, activeDays, exName, diariHTML, diariClick, pinPadHTML, PinPad };
 })();
